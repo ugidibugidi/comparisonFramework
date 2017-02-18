@@ -1,0 +1,39 @@
+#!/bin/bash
+
+LABEL_FILE="/Users/balder/Documents/Uni/masterarbeit/data/weka/ARD-h16.label"
+OUTPUT_FILE="/Users/balder/Documents/Uni/masterarbeit/data/weka/ARD-h16.txt"
+STEP_SIZE=200 #in ms
+
+# remove old file
+rm -f $OUTPUT_FILE
+
+OLDIFS=$IFS
+IFS=','
+[ ! -f $LABEL_FILE ] && { echo "$LABEL_FILE file not found"; exit 99; }
+j=0
+# also read last line even though it does countain no newline
+while read start duration class || [[ -n "$start" ]]
+do
+	# convert to ms and then to integer
+	start=`echo "$start * 1000" | bc`
+	start=${start%.*}
+	duration=`echo "$duration * 1000" | bc`
+	duration=${duration%.*}
+	
+	# convert class to labels
+	if [ "$class" = "0;" ]
+	then
+		class="non_commercial"
+	else
+		class="commercial"
+	fi
+
+	# write it to file
+	for (( i=0; i<duration; i=i+STEP_SIZE))
+	do
+		echo "$class" >> $OUTPUT_FILE
+		j=$((j+1))
+	done
+
+done < $LABEL_FILE
+IFS=$OLDIFS

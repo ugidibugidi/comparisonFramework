@@ -1,0 +1,12 @@
+.DS_Store
+_backup
+_playground
+_runs
+audio
+featureFiles
+labels
+labels_pred
+testset
+tmp
+trainset
+prog/_temp_pred_labels
